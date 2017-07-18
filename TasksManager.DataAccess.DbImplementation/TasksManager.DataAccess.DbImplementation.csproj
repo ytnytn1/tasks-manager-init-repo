@@ -14,4 +14,9 @@
     <ProjectReference Include="..\TasksManager.ViewModel\TasksManager.ViewModel.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Tags\" />
+    <Folder Include="Tasks\" />
+  </ItemGroup>
+
 </Project>

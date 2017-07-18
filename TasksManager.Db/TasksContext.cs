@@ -11,5 +11,11 @@ namespace TasksManager.Db
         public DbSet<Task> Tasks { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<TagsInTask> TagsInTasks { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Server=localhost\\SQLEXPRESS;Database=TaskManager;Trusted_Connection=True;");
+            base.OnConfiguring(optionsBuilder);
+        }
     }
 }
