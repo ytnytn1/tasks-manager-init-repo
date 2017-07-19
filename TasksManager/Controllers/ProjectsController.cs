@@ -28,7 +28,7 @@ namespace TasksManager.Controllers
                 return BadRequest(ModelState);
             }
             ProjectResponse response = await command.ExecuteAsync(request);
-            return Ok(response); // This is wrong, it should return 401
+            return CreatedAtAction("GetProjectAsync", new { projectId = response.Id }, response);
         }
 
         [HttpGet("{projectId}")]
@@ -36,8 +36,8 @@ namespace TasksManager.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetProjectAsync(int projectId, [FromServices]IProjectQuery query)
         {
-            ProjectResponse response = await query.RunAsync(projectId);
-            return response == null
+           ProjectResponse response = await query.RunAsync(projectId);
+           return response == null
                 ? (IActionResult)NotFound()
                 : Ok(response);
         }
@@ -46,17 +46,38 @@ namespace TasksManager.Controllers
         [ProducesResponseType(200, Type = typeof(ProjectResponse))]
         [ProducesResponseType(404)]
         [ProducesResponseType(400)]
-        public Task<IActionResult> UpdateProjectAsync(int projectId, [FromBody]UpdateProjectRequest request)
+        public async Task<IActionResult> UpdateProjectAsync(int projectId, [FromBody]UpdateProjectRequest request, [FromServices] IUpdateProjectCommand command)
         {
-            throw new NotImplementedException();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var response = await command.ExecuteAsunc(projectId, request);
+            return response == null
+                ? (IActionResult)NotFound()
+                : Ok(response);
         }
 
         [HttpDelete("{projectId}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public Task<IActionResult> DeleteProjectAsync(int projectId)
+        public async Task<IActionResult> DeleteProjectAsync(int projectId, [FromServices] IDeleteProjectCommand command)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await command.ExecuteAsync(projectId);
+                return new StatusCodeResult(204);
+            }
+            catch (CannotDeleteProjectWithTasksException e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e.Message);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new StatusCodeResult(500);
+            }
         }
     }
 }

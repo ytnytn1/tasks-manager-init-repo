@@ -12,7 +12,7 @@ namespace TasksManager.Controllers
     {
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(ListResponse<TagsResponse>))]
-        public async Task<IActionResult> GetTagsistAsync(TagsFilter filter, ListOptions options, [FromServices]ITagsListQuery query)
+        public async Task<IActionResult> GetTagsListAsync(TagsFilter filter, ListOptions options, [FromServices]ITagsListQuery query)
         {
             var response = await query.RunAsync(filter, options);
             return Ok(response);
